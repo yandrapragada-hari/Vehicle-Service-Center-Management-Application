@@ -1,0 +1,36 @@
+.form-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+}
+
+.form-container form {
+  display: inline-block;
+}
+
+.form-container input,
+.form-container select,
+.form-container textarea {
+  display: block;
+  width: 260px;
+  padding: 8px;
+  margin: 10px auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-container button {
+  padding: 10px 15px;
+  background-color: #6b21a8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background-color: #4c1d95;
+}

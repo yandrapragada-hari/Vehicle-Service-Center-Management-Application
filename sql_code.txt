@@ -1,0 +1,247 @@
+CREATE DATABASE IF NOT EXISTS vehicleservice;
+USE vehicleservice;
+
+
+-- ============================================================
+-- CREATE TABLES
+-- ============================================================
+
+-- Users Table
+CREATE TABLE IF NOT EXISTS users (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    username   VARCHAR(255) UNIQUE NOT NULL,
+    password   VARCHAR(255) NOT NULL,
+    role       VARCHAR(20) DEFAULT 'customer',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+    order_id            INT PRIMARY KEY AUTO_INCREMENT,
+    customer_name       VARCHAR(100) NOT NULL,
+    vehicle_number      VARCHAR(20)  NOT NULL,
+    service_type        VARCHAR(50)  NOT NULL,
+    service_date        DATE         NOT NULL,
+    problem_description TEXT,
+    status              VARCHAR(20)  DEFAULT 'Pending',
+    created_at          TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    user_id             INT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Audit Table (used by Trigger)
+CREATE TABLE IF NOT EXISTS orders_audit (
+    audit_id   INT AUTO_INCREMENT PRIMARY KEY,
+    order_id   INT,
+    old_status VARCHAR(20),
+    new_status VARCHAR(20),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ============================================================
+-- DDL - ALTER TABLE (Schema Modification Examples)
+-- ============================================================
+
+-- Add role column to users if missing
+ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'customer';
+
+-- Add user_id to orders if missing
+ALTER TABLE orders ADD COLUMN user_id INT;
+
+
+-- ============================================================
+-- DML - INSERT DATA (Sample Records)
+-- ============================================================
+
+-- Insert Users
+INSERT INTO users (username, password, role) VALUES
+    ('admin',     'password', 'admin'),
+    ('customer1', 'pass',     'customer'),
+    ('customer2', 'pass123',  'customer'),
+    ('haridev',   'hari28',   'customer');
+
+
+truncate Table Orders;
+select * from users;
+select * from orders;
+
+-- ============================================================
+-- DDL - VIEWS
+-- ============================================================
+
+-- View 1: Pending Orders with Username (JOIN View)
+CREATE OR REPLACE VIEW pending_orders_view AS
+    SELECT
+        o.order_id,
+        o.customer_name,
+        o.vehicle_number,
+        o.service_type,
+        o.service_date,
+        o.problem_description,
+        u.username
+    FROM orders o
+    JOIN users u ON o.user_id = u.id
+    WHERE o.status = 'Pending';
+
+-- View 2: All Orders with Username (Comprehensive View)
+CREATE OR REPLACE VIEW all_orders_view AS
+    SELECT
+        o.order_id,
+        o.customer_name,
+        o.vehicle_number,
+        o.service_type,
+        o.service_date,
+        o.status,
+        o.problem_description,
+        o.created_at,
+        u.username,
+        u.role
+    FROM orders o
+    LEFT JOIN users u ON o.user_id = u.id;
+
+-- View 3: Service Summary View (Aggregate View)
+CREATE OR REPLACE VIEW service_summary_view AS
+    SELECT
+        service_type,
+        COUNT(*)                                                     AS total_orders,
+        SUM(CASE WHEN status = 'Pending'     THEN 1 ELSE 0 END)     AS pending_count,
+        SUM(CASE WHEN status = 'Completed'   THEN 1 ELSE 0 END)     AS completed_count,
+        SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END)     AS inprogress_count
+    FROM orders
+    GROUP BY service_type;
+
+
+-- ============================================================
+-- DDL - TRIGGERS
+-- ============================================================
+
+DROP TRIGGER IF EXISTS after_order_update;
+
+DELIMITER $$
+
+-- Trigger: Log every status change into orders_audit table
+CREATE TRIGGER after_order_update
+AFTER UPDATE ON orders
+FOR EACH ROW
+BEGIN
+    IF OLD.status != NEW.status THEN
+        INSERT INTO orders_audit (order_id, old_status, new_status)
+        VALUES (OLD.order_id, OLD.status, NEW.status);
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+-- ============================================================
+-- DQL - SELECT QUERIES
+-- ============================================================
+
+-- 7.1 Basic SELECT
+SELECT * FROM users;
+SELECT * FROM orders;
+
+-- 7.2 SELECT with WHERE clause
+SELECT * FROM orders WHERE status = 'Pending';
+SELECT * FROM orders WHERE service_type = 'Repair';
+SELECT * FROM orders WHERE service_date BETWEEN '2026-03-01' AND '2026-04-30';
+
+-- 7.3 JOIN Queries
+-- INNER JOIN: Orders with who booked them
+SELECT
+    o.order_id,
+    o.customer_name,
+    o.vehicle_number,
+    o.service_type,
+    o.service_date,
+    o.status,
+    u.username
+FROM orders o
+INNER JOIN users u ON o.user_id = u.id;
+
+-- LEFT JOIN: All orders (even if user deleted)
+SELECT
+    o.order_id,
+    o.customer_name,
+    o.vehicle_number,
+    o.status,
+    u.username
+FROM orders o
+LEFT JOIN users u ON o.user_id = u.id;
+
+-- 7.4 Aggregate Functions
+-- COUNT total orders
+SELECT COUNT(*) AS total_orders FROM orders;
+
+-- SUM, GROUP BY service type
+SELECT
+    service_type,
+    COUNT(*) AS total
+FROM orders
+GROUP BY service_type;
+
+-- Orders per user with username
+SELECT
+    u.username,
+    COUNT(o.order_id) AS total_bookings
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.username;
+
+-- Min/Max service dates
+SELECT
+    MIN(service_date) AS earliest_service,
+    MAX(service_date) AS latest_service
+FROM orders;
+
+-- 7.5 HAVING clause (filter groups)
+-- Service types with more than 1 booking
+SELECT
+    service_type,
+    COUNT(*) AS count
+FROM orders
+GROUP BY service_type
+HAVING count > 1;
+
+-- 7.6 ORDER BY
+SELECT * FROM orders ORDER BY service_date DESC;
+SELECT * FROM orders ORDER BY status ASC, created_at DESC;
+
+-- 7.7 Subquery: Users who have at least one order
+SELECT username FROM users
+WHERE id IN (SELECT DISTINCT user_id FROM orders);
+
+-- 7.8 Status Distribution (Aggregate)
+SELECT
+    COUNT(*)                                                     AS total_orders,
+    SUM(CASE WHEN status = 'Pending'     THEN 1 ELSE 0 END)     AS pending_orders,
+    SUM(CASE WHEN status = 'Completed'   THEN 1 ELSE 0 END)     AS completed_orders,
+    SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END)     AS inprogress_orders
+FROM orders;
+
+-- 7.9 Query the Views
+SELECT * FROM pending_orders_view;
+SELECT * FROM all_orders_view;
+SELECT * FROM service_summary_view;
+
+-- 7.10 Query Audit Table
+SELECT * FROM orders_audit ORDER BY changed_at DESC;
+
+
+-- ============================================================
+-- DML - UPDATE & DELETE
+-- ============================================================
+
+-- UPDATE: Change order status (this will fire the trigger)
+UPDATE orders SET status = 'Completed'   WHERE order_id = 1;
+UPDATE orders SET status = 'In Progress' WHERE order_id = 3;
+
+-- UPDATE: Change user password
+UPDATE users SET password = 'newpassword' WHERE username = 'customer1';
+
+-- DELETE: Remove a specific order
+-- DELETE FROM orders WHERE order_id = 7;
+
+-- Verify audit trail after updates
+SELECT * FROM orders_audit;

@@ -1,0 +1,19 @@
+.manage-container {
+  padding: 20px;
+}
+
+.manage-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.manage-container th, .manage-container td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.manage-container button {
+  margin: 2px;
+  padding: 5px 10px;
+}

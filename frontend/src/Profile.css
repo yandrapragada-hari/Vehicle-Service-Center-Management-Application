@@ -1,0 +1,13 @@
+.profile-container {
+  text-align: center;
+  padding: 50px;
+}
+
+.profile-info {
+  margin-bottom: 30px;
+}
+
+.profile-info p {
+  font-size: 18px;
+  margin: 10px 0;
+}

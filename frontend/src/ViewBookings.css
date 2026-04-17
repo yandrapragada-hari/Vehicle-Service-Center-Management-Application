@@ -1,0 +1,50 @@
+.table-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: left; /* Tables look better left aligned */
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.table-container h2 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #fff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.table-container > button {
+  float: right;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  box-shadow: none;
+  font-weight: 400;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.table-container > button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(0);
+}
+
+/* Clearfix for button float */
+.table-container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Rest of the table styling is dynamically handled by global index.css */
+/* Overrides if necessary */
+.table-container table {
+  width: 100%;
+  margin-top: 0;
+}
