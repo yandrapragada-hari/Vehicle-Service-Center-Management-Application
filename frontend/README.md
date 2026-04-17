@@ -1,16 +1,127 @@
-# React + Vite
+# 🚗 Vehicle Service Center Management Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **DBMS-based group project** developed to streamline vehicle service operations. This system enables users to book services, manage vehicle records, and allows administrators to handle service requests efficiently.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📌 Features
 
-## React Compiler
+* 🔐 User Authentication (Login/Register)
+* 🛠️ Book Vehicle Services
+* 📅 View & Manage Bookings
+* 📊 Admin Dashboard
+* 👤 User Profile Management
+* 🧾 Service History Tracking
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend:
+
+* React.js (Vite)
+* HTML, CSS, JavaScript
+
+### Backend:
+
+* Node.js
+* Express.js
+
+### Database:
+
+* MySQL
+
+---
+
+## 📁 Project Structure
+
+```id="x6l9rq"
+Vehicle-Service-Center-Management-Application/
+│
+├── backend/        # Server, APIs, DB connection
+├── frontend/       # React UI
+├── sql_code.txt    # Database schema
+└── README.md
+```
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Clone the repository
+
+```id="c5j1x6"
+git clone https://github.com/yandrapragada-hari/Vehicle-Service-Center-Management-Application.git
+cd Vehicle-Service-Center-Management-Application
+```
+
+---
+
+### 2️⃣ Backend Setup
+
+```id="czl2fx"
+cd backend
+npm install
+```
+
+Create `.env` file:
+
+```id="h6d9u3"
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=vehicleservice
+```
+
+Run server:
+
+```id="l1t9d4"
+node server.js
+```
+
+---
+
+### 3️⃣ Frontend Setup
+
+```id="j9v4sp"
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🗄️ Database Setup
+
+* Open MySQL
+* Import:
+
+```id="0d3yq8"
+sql_code.txt
+```
+
+---
+
+## 👥 Team Members
+
+* **Yandrapragada Hari**
+* **Jasmitha Kolluru**
+* **Vuyyala Sai Madhulika**
+* **Palacharla Ravi Teja**
+* **Mylavarapu L Siva Jyothi Likhitha Ganga**
+
+---
+
+## 🎓 Project Info
+
+* 📘 Subject: Database Management Systems (DBMS)
+* 🏫 University: SRM University
+* 👨‍💻 Type: Group Project
+
+
+
+---
+
+## ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub!
